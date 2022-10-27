@@ -10,5 +10,5 @@
 7. Blockchain
 8. Distributed Ledger
 
-[Jupyter hello]()
+[Jupyter hello](/jupyter/hello.ipybn)
 
