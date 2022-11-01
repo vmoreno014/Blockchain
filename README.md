@@ -197,10 +197,7 @@ def hasher(file):
 ```
 
 #### Example
-Run [hasher.py](testing/hasher.py) to get the hash digest of a file.
-
-
-
+Run [hasher.py](Blockchain/jupyter/testing/hasher.py) to get the hash digest of a file.
 
 ### Signer
 Secondly, we need a method that signs the block with a private key (8 HEX characters) and a public key (G39).
