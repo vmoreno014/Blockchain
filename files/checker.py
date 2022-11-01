@@ -16,9 +16,13 @@ def checker(path_input1, path_input2):
                 lines1 = f1.readlines()
                 lines2 = f2.readlines()
 
-                # checks every line except the last one
+                # checks every line except the last one and the two first lines
                 for i in range(len(lines1) - 1):
+                    if i < 3:
+                        continue
+
                     if lines1[i] != lines2[i]:
+                        print("Different line (", i, "):\n", lines1[i], lines2[i])
                         return False
 
                 # checks the last line
@@ -31,6 +35,7 @@ def checker(path_input1, path_input2):
         return False
 
     return True
+
 
 # CASE 6: Checks if two files accomplish the requirements
 def test_case6():
