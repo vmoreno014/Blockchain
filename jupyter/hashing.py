@@ -9,7 +9,7 @@ import time
 def signer(file, signature):
     f = open(file, "a")
     sign = secrets.token_hex(4) + " " + signature
-    f.write(sign + "\n")
+    f.write("\n" + sign)
     f.close()
     return sign
 

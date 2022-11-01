@@ -184,8 +184,8 @@ Bitcoin is the first cryptocurrency and the most popular one.
 [Khan Academy Course](https://www.khanacademy.org/economics-finance-domain/core-finance/money-and-banking#bitcoin)
 
 # Blockchain examples <a name="example"></a>
-### Hasher
-First of all, we need a method to get the hash digest in SHA-256 of any content from a file.
+### Signer and hasher
+First of all, we need to sign the files and also get the hash of a given file.
 ```python
 import hashlib
 
@@ -196,11 +196,6 @@ def hasher(file):
     return hashlib.sha256(bytes).hexdigest()
 ```
 
-#### Example
-Run [hasher.py](Blockchain/jupyter/testing/hasher.py) to get the hash digest of a file.
-
-### Signer
-Secondly, we need a method that signs the block with a private key (8 HEX characters) and a public key (G39).
 ```python
 import secrets
 
@@ -213,5 +208,46 @@ def signer(file, signature):
     return sign
 ```
 
-### 
+```python
+import shutil
+import os
+import basics
+
+# Signs a file with a given signature, and return the hash of the signed file
+def block_hasher(path, signature):
+    # makes a copy of the input file
+    copy = shutil.copyfile(path, "signed.txt")
+
+    # signs the file and return the last line added to the file
+    sign = basics.signer(copy, signature)
+
+    # hashes the file
+    signed_hash = basics.hasher(copy)
+
+    # copy the signed file to the input file
+    shutil.copyfile(copy, path)
+
+    # removes the copy
+    os.remove(copy)
+    return signed_hash
+```
+
+#### Example
+Run [blocks.py](jupyter/testing/blocks.py) to see an example of signing a file and getting it has value.
+
+With these three test cases, we can observe some properties of the SHA-256 hash function as described in the [cruptographic hash functions section](#crypto-hash).  
+
+
+[**Hide information** and **non-predictable output**]   
+In the first case we can see that the hash value seems random, but it is not. 
+
+[**Collision resistant**]  
+With a 64 character hash (256 bits), it is very unlikely to find two different files with the same hash value.
+
+[**Deterministic** and **one-way**]
+In the second case we can check that the SHA-256 hash function is deterministic, since the hash value of the file (*test.txt*) is the same as in the first case since we didn't change the file.  
+Also, we can see that the hash function is one-way, since we can't get the original file from the hash value information.
+
+[**Computationaly efficient**]  
+After running the three test cases we can observe that the hash function is computationaly efficient, since it takes a lot less than 1 second to obtain the hash value.
 
