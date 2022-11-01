@@ -43,16 +43,6 @@ def test_case3():
         lines = f.readlines()
         print("After signing:  " + str(lines))
 
-# TESTING
-
-print(" --- CASE 1 --- ")
-basics.test_case1()
-
-print("\n --- CASE 2 --- ")
-basics.test_case2()
-
-print("\n --- CASE 3 --- ")
-test_case3()
-# First part, can be understood as a private key (since it is not shared)
-# Second part, can be understood as a public key (since is an input parameter, so it can be know by the user)
+    # 5. Remove the file
+    os.remove("test.txt")
 

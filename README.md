@@ -233,21 +233,135 @@ def block_hasher(path, signature):
 ```
 
 #### Example
-Run [blocks.py](jupyter/testing/blocks.py) to see an example of signing a file and getting it has value.
+```text
+ --- CASE 1 --- 
+Hash: a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e
 
-With these three test cases, we can observe some properties of the SHA-256 hash function as described in the [cruptographic hash functions section](#crypto-hash).  
+ --- CASE 2 --- 
+Hash before signing: a591a6d40bf420404a011733cfb7b190d62c65bf0bcda32b57b277d9ad9f146e
+Hash after signing:  05b71e0acef1ec412c915ffad65bb3a7b38decba5bd7d8958685e1c9d32c6992
+
+ --- CASE 3 --- 
+Before signing: ['Hello World']
+Hash: 8b41337cb9563e93cbc0c999d2c3f544eee93f2664b66ad58bcde3fcb5a5c54c
+After signing:  ['Hello World\n', '40d654d2 G39']
+```
 
 
-[**Hide information** and **non-predictable output**]   
+
+With these test cases, we can observe some properties of the SHA-256 hash function as described in the [cruptographic hash functions section](#crypto-hash).  
+
+
+**Hide information** and **non-predictable output**  
 In the first case we can see that the hash value seems random, but it is not. 
 
-[**Collision resistant**]  
+**Collision resistant**  
 With a 64 character hash (256 bits), it is very unlikely to find two different files with the same hash value.
 
-[**Deterministic** and **one-way**]
+**Deterministic** and **one-way**  
 In the second case we can check that the SHA-256 hash function is deterministic, since the hash value of the file (*test.txt*) is the same as in the first case since we didn't change the file.  
 Also, we can see that the hash function is one-way, since we can't get the original file from the hash value information.
 
-[**Computationaly efficient**]  
+**Computationaly efficient**  
 After running the three test cases we can observe that the hash function is computationaly efficient, since it takes a lot less than 1 second to obtain the hash value.
+
+### Zeros methods
+As we have seen in the [proof of work section](#proof-of-work), the proof of work algorithm is based on finding a number that when hashed with the data of the block, the resulting hash starts with a given number of zeros.  
+Therefore, we are going to implement some methods to find hashes with a given number of zeros.
+
+```python
+import os
+import shutil
+import blocks
+import basics
+
+# Finds a hash with a given number of zeros
+def num_finder(file, signature, n_zeros):
+    # if n_zeros = 2 then zeros = "00"
+    zeros = __convert_string(n_zeros)
+
+    # make a copy of input file
+    copy = shutil.copyfile(file, "nf_tmp.txt")
+
+    while True:
+        # sign the copy and get it hash until it starts with at least n_zeros
+        signed_hash = blocks.block_hasher(copy, signature)
+        if signed_hash.startswith(zeros):
+            return signed_hash
+```
+
+```python
+# Number of zeros to string
+def __convert_string(n):
+    zeros = ""
+    for i in range(n):
+        zeros += "0"
+
+    return zeros
+```
+
+When there are a lot of computers in the blockchain network that obtain a hash with a given number of zeros, the winner
+that gets the transaction fee is the one that obtains the hash with the largest amount of zeros in less time.
+
+```python
+# Finds the maximum number of zeros under the given time
+# We can't use num_find because process can take more time than the given seconds
+def max_finder(path_input, path_output, signature, seconds):
+    # counter of zeros that will be incremented each time a hash with n zeros is found
+    max_zeros = 1
+
+    # string of zeros
+    zeros = __convert_string(max_zeros)
+
+    # copy of the input file
+    copy = shutil.copyfile(path_input, "mf_tmp.txt")
+
+    # last valid hash obtained
+    valid_hash = ""
+
+    # time
+    t = 0
+
+    # timer starts now
+    start = time.time()
+
+    while t < seconds:
+        # time left
+        t = time.time() - start
+
+        # hash of the copy
+        signed_hash = blocks.block_hasher(copy, signature)
+
+        if signed_hash.startswith(zeros):
+            valid_hash = signed_hash
+
+            # remove previous output file generated with fewer zeros
+            if os.path.exists(path_output):
+                os.remove(path_output)
+
+            # copy is now the output file, is signed
+            shutil.copyfile(copy, path_output)
+
+            # resets the file to remove the last signature
+            os.remove(copy)
+            copy = shutil.copyfile(path_input, "tmp.txt")
+
+            # increments the number of zeros, try to find a hash with more zeros
+            max_zeros += 1
+            zeros = __convert_string(max_zeros)
+
+    return valid_hash
+```
+
+If we give more time to the max_finder method, we can find have more probability to find a hash with more zeros.
+
+```text
+ --- CASE 5 --- 
+Search time: 20 seconds
+Hash: 00079cef5307c6aef6fac056684699cc332cc4d22163aee2f242a6aacb0144e4
+Last line of the output file: 308ece06 ikaslea
+```
+
+In this case, we found a hash with 3 zeros in 20 seconds. So, we were a little lucky, usually it would find a 
+hash with 2 zeros in 20 seconds. And this is a proof of work.
 
