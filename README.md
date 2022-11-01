@@ -342,14 +342,15 @@ def max_finder(path_input, path_output, signature, seconds):
             # copy is now the output file, is signed
             shutil.copyfile(copy, path_output)
 
-            # resets the file to remove the last signature
-            os.remove(copy)
-            copy = shutil.copyfile(path_input, "tmp.txt")
-
             # increments the number of zeros, try to find a hash with more zeros
             max_zeros += 1
             zeros = __convert_string(max_zeros)
 
+        # resets the file to remove the last signature
+        os.remove(copy)
+        copy = shutil.copyfile(path_input, "tmp.txt")
+
+    os.remove(copy)
     return valid_hash
 ```
 
@@ -365,3 +366,149 @@ Last line of the output file: 308ece06 ikaslea
 In this case, we found a hash with 3 zeros in 20 seconds. So, we were a little lucky, usually it would find a 
 hash with 2 zeros in 20 seconds. And this is a proof of work.
 
+In our case, we had to hash the file "SGSSI-22.CB.O2.txt" with signature "G39", into "SGSSI-22.CB.O2.VMOR.txt".
+
+```python
+def test_lab5():
+    path_input = "SGSSI-22.CB.02.txt"
+    path_output = "SGSSI-22.CB.02.VMOR.txt"
+    signature = "G39"
+    seconds = 20
+    print("Search time: " + str(seconds) + " seconds")
+
+    hash = max_finder(path_input, path_output, signature, seconds)
+    print("Hash: " + hash)
+
+    with open(path_output, "r") as f:
+        print("Last line of the output file: " + f.readlines()[-1])
+```
+
+```text
+ --- LAB 5 --- 
+Search time: 20 seconds
+Hash: 00e0dc3d6e03a8158da9a00cf00c10ca9667fa2a8ae246aab89a6a94d3039d43
+Last line of the output file: f6cb905d G39
+```
+
+Now we are going to be the checkers instead of the miners, so we will have to check is a file is signed and if the 
+hash of that file starts with zeros.
+
+```python
+import filecmp
+import basics
+
+def checker(path_input1, path_input2):
+    # check if is the same file
+    if path_input1 == path_input2:
+        return False
+
+    # check if the content is the same
+    if not filecmp.cmp(path_input1, path_input2):
+        with open(path_input1, "r") as f1:
+            with open(path_input2, "r") as f2:
+                lines1 = f1.readlines()
+                lines2 = f2.readlines()
+
+                # checks every line except the last one
+                for i in range(len(lines1) - 1):
+                    if lines1[i] != lines2[i]:
+                        return False
+
+                # checks the last line
+                if not re.match(r"[a-z0-9]{8} G([0-9]{2})+", lines2[-1]):
+                    return False
+
+    # check if the hash of the second file starts with zeros
+    hash = basics.hasher(path_input2)
+    if not hash.startswith("00"):
+        return False
+
+    return True
+```
+
+When we test with the files "SGSSI-22.CB.02.txt" and "SGSSI-22.CB.02.VMOR.txt", we get True.  
+And that is correct, as the second file is the one we signed in the last test from LAB 5.
+The hash of this file starts with 2 zeros and is signed by "G39".  
+
+```text
+Valid file:  True
+```
+
+As we are in a network with a lot of computers that are mining, we have to check a lot of files.
+Therefore, now we are going to implement a method that checks a lot of files from the same folder and returns the winner.
+We already mentioned, that the winner is the one that obtains the hash with the largest amount of zeros. 
+In this case, all the files are in a folder, so we don't know the time that it took to each file to obtain the hash. 
+
+```python
+import os
+import shutil
+
+import basics
+import checker
+
+# Return the number of consecutive zeros at the beginning of the hash
+def zeros_counter(hash):
+    zeros = 0
+    for char in hash:
+        if char == "0":
+            zeros += 1
+        else:
+            break
+    return zeros
+
+# Returns the last line of a file
+def last_line(path):
+    with open(path, "r") as f:
+        lines = f.readlines()
+        return lines[-1]
+
+
+def files_checker(path_input, directory):
+    # dictionary with key=number of consecutive zeros and value=hash
+    zeros_hash = {}
+    hash_input = basics.hasher(path_input)
+    zeros_input = zeros_counter(hash_input)
+    line_input = last_line(path_input)
+    zeros_hash[zeros_input] = (hash_input, line_input)
+
+    # check every file in directory
+    for file in os.listdir(directory):
+
+        # path of the file
+        path = os.path.join(directory, file)
+        tmp1 = shutil.copyfile(path_input, "tmp1.txt")
+        tmp2 = shutil.copyfile(path, "tmp2.txt")
+
+        # check if the file is a valid candidate
+        if checker.checker(tmp1, tmp2):
+            hash = basics.hasher(tmp2)
+            zeros = zeros_counter(hash)
+            line = last_line(tmp2)
+            zeros_hash[zeros] = (hash, line)
+
+    # check if there is a tie in the max number of consecutive zeros
+    max_zeros = max(zeros_hash.keys())
+    winners = []
+    for key in zeros_hash.keys():
+        if key == max_zeros:
+            winners.append(zeros_hash[key])
+
+    # there is more than one winner
+    if len(winners) > 1:
+        winners.sort()
+        return winners[0]
+
+    # there is only one winner
+    else:
+        return winners[0]
+
+tmp = files_checker("SGSSI-22.CB.02.VMOR.txt", "SGSSI-22.Lab06.CB.02.Candidatos")
+print(tmp)
+```
+
+After analyzing all the files one by one, we create a dictionary that contains the hash of the file, the number of 
+consecutive zeros as the key anf the last line (signature) to know who is the owner of the winner hash. 
+
+```text
+('00000068919edb1b9cc570cc592f754938680a7bdd82adb7e6517d0f5839e64b', '0bde8f37 G14')
+```
