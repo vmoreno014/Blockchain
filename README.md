@@ -1,4 +1,8 @@
 # Blockchain
+with ⏳ and ❤ by [Victor Moreno Arribas](https://www.linkedin.com/in/vmorenoa) for learning purposes from the 
+subject [Sistemas de Gestión de Seguridad de Sistemas de Información](https://www.ehu.eus/es/web/guest/grado-ingenieria-informatica/creditos-y-asignaturas?p_redirect=consultaAsignatura&p_cod_proceso=egr&p_anyo_acad=20220&p_ciclo=X&p_curso=4&p_cod_asignatura=26025) 
+at the [Facultad de Informática](https://www.ehu.eus/es/web/guest/grado-ingenieria-informatica) in the campus of 
+Gipuzkoa from the [Universidad del Pais Vasco](https://www.ehu.eus/en/web/guest/home) (UPV/EHU).
 
 ## Table of Contents
 1. [Asymmetric Cryptography](#asymmetric-cryptography)
@@ -10,6 +14,9 @@
 7. [Ledger](#ledger)
 8. [Blockchain](#blockchain)
 9. [Bitcoin](#bitcoin)
+
+## [Blockchain example in Python](#example)
+
 
 ## 1. Asymmetric Cryptography <a name="asymmetric-cryptography"></a>
 - *Symmetric cryptography* uses the same key for encryption and decryption.
@@ -175,3 +182,39 @@ Bitcoin is the first cryptocurrency and the most popular one.
 
 ### Resources
 [Khan Academy Course](https://www.khanacademy.org/economics-finance-domain/core-finance/money-and-banking#bitcoin)
+
+# Blockchain examples <a name="example"></a>
+### Hasher
+First of all, we need a method to get the hash digest in SHA-256 of any content from a file.
+```python
+import hashlib
+
+# Generates the hash for a given filename
+def hasher(file):
+    with open(file, "rb") as f:
+        bytes = f.read()  # read entire file as bytes
+    return hashlib.sha256(bytes).hexdigest()
+```
+
+#### Example
+Run [hasher.py](testing/hasher.py) to get the hash digest of a file.
+
+
+
+
+### Signer
+Secondly, we need a method that signs the block with a private key (8 HEX characters) and a public key (G39).
+```python
+import secrets
+
+# Sign the file with an 8-len HEX string and a signature
+def signer(file, signature):
+    f = open(file, "a")
+    sign = secrets.token_hex(4) + " " + signature
+    f.write(sign + "\n")
+    f.close()
+    return sign
+```
+
+### 
+
