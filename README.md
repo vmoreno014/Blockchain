@@ -512,3 +512,17 @@ consecutive zeros as the key anf the last line (signature) to know who is the ow
 ```text
 ('00000068919edb1b9cc570cc592f754938680a7bdd82adb7e6517d0f5839e64b', '0bde8f37 G14')
 ```
+
+Now for the activity 7.2 we are requested to sign the file "SGSSI-22.CB.03.txt" until we find a 8 hex length string in
+the signature that provides a hash of the file that starts with a sequence of zeros.
+
+```text
+ --- LAB 6 --- 
+Search time: 60 seconds
+Hash: 000bf1d6a4af10b9fde91887e83aa09cf295cc0bc9ae5b1b71cba40bb0adba3d
+Last line of the output file: 8e5b9fd3 G39
+```
+
+In our case, we obtained 3 zeros in 60 seconds, pretty good.
+The resulting file is "SGSSI-22.CB.03.VMOR.txt", this file is signed with an 8 lenght hex string and "G39", and also the
+hash of the file starts with "000". Therefore, is a valid resulting file.

@@ -60,5 +60,5 @@ def files_checker(path_input, directory):
     else:
         return winners[0]
 
-tmp = files_checker("SGSSI-22.CB.02.VMOR.txt", "SGSSI-22.Lab06.CB.02.Candidatos")
+tmp = files_checker("SGSSI-22.CB.03.VMOR.txt", "SGSSI-22.CB.Candidatos")
 print(tmp)

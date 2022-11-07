@@ -112,6 +112,20 @@ def test_lab5():
     with open(path_output, "r") as f:
         print("Last line of the output file: " + f.readlines()[-1])
 
+
+def test_lab6():
+    path_input = "SGSSI-22.CB.03.txt"
+    path_output = "SGSSI-22.CB.03.VMOR.txt"
+    signature = "G39"
+    seconds = 60
+    print("Search time: " + str(seconds) + " seconds")
+
+    hash = max_finder(path_input, path_output, signature, seconds)
+    print("Hash: " + hash)
+
+    with open(path_output, "r") as f:
+        print("Last line of the output file: " + f.readlines()[-1])
+
 # TESTING
 """
 print(" --- CASE 1 --- ")
@@ -133,4 +147,9 @@ test_case5()
 
 print("\n --- LAB 5 --- ")
 test_lab5()
+
+
 """
+
+print("\n --- LAB 6 --- ")
+test_lab6()
