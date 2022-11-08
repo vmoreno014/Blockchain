@@ -15,6 +15,7 @@ def __convert_string(n):
 
     return zeros
 
+
 # Finds the maximum number of zeros under the given time
 # We can't use num_find because process can take more time than the given seconds
 def max_finder(path_input, path_output, signature, seconds):
@@ -61,10 +62,9 @@ def max_finder(path_input, path_output, signature, seconds):
         os.remove(copy)
         copy = shutil.copyfile(path_input, "mf_tmp.txt")
 
-
-
     os.remove(copy)
     return valid_hash
+
 
 # CASE 5: Find the maximum number of zeros under the given time
 def test_case5():
@@ -87,7 +87,6 @@ def test_case5():
     # hash with the maximum number of zeros
     hash = max_finder(path_input, path_output, signature, seconds)
 
-
     # print the hash
     print("Hash: " + hash)
 
@@ -98,6 +97,7 @@ def test_case5():
     # remove the files
     os.remove(path_input)
     os.remove(path_output)
+
 
 def test_lab5():
     path_input = "SGSSI-22.CB.02.txt"
@@ -126,6 +126,21 @@ def test_lab6():
     with open(path_output, "r") as f:
         print("Last line of the output file: " + f.readlines()[-1])
 
+
+def test_lab8():
+    path_input = "SGSSI-22.CB.04.txt"
+    path_output = "SGSSI-22.CB.04.VMOR.txt"
+    signature = "G39"
+    seconds = 3600
+    print("Search time: " + str(seconds) + " seconds")
+
+    hash = max_finder(path_input, path_output, signature, seconds)
+    print("Hash: " + hash)
+
+    with open(path_output, "r") as f:
+        print("Last line of the output file: " + f.readlines()[-1])
+
+
 # TESTING
 """
 print(" --- CASE 1 --- ")
@@ -148,8 +163,11 @@ test_case5()
 print("\n --- LAB 5 --- ")
 test_lab5()
 
-
-"""
-
 print("\n --- LAB 6 --- ")
 test_lab6()
+"""
+
+
+
+print("\n --- LAB 8 --- ")
+test_lab8()
